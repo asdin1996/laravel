@@ -127,6 +127,7 @@
                     </div>
                 </div>
             </div>
+            <a href="{{ url('/tasks') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">TASKS</a>
         </div>
     </body>
 </html>
