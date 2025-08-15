@@ -14,14 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('books', function (Blueprint $table) {
-           $table->id();
-            $table->string('title');
-            $table->unsignedBigInteger('contact_id')->nullable();
+            $table->id();
             $table->timestamps();
-
-            $table->foreign('contact_id')
-                ->references('id')->on('contacts')
-                ->nullOnDelete();
         });
     }
 

@@ -4,12 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\AssignOp\Concat;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $contacts = Contact::all();
+        $query = Contact::query();
+
+        if ($request->filled('title')) {
+            $query->where('name', 'like', '%' . $request->title . '%');
+        }
+
+        if ($request->filled('contact_id')) {
+            $query->where('id', $request->contact_id);
+        }
+
+        if ($request->has('clean')) {
+            return redirect()->route('contacts.index'); // limpia todo
+        }
+
+        $contacts = $query->paginate(10)->appends($request->query());
+
         return view('contacts.index', compact('contacts'));
     }
 
@@ -31,5 +47,12 @@ class ContactController extends Controller
 
         return redirect()->route('contacts.index')->with('success', 'Registrado correctamente');
     }
+
+        public function destroy(Contact $contact)
+    {
+        $contact->delete();
+        return redirect()->back()->with('success', 'Usuario eliminado');
+    }
+
 
 }

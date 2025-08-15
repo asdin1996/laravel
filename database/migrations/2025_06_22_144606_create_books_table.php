@@ -13,15 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('books', function (Blueprint $table) {
-           $table->id();
-            $table->string('title');
-            $table->unsignedBigInteger('contact_id')->nullable();
+        Schema::create('contacts', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-
-            $table->foreign('contact_id')
-                ->references('id')->on('contacts')
-                ->nullOnDelete();
         });
     }
 
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('books');
+        Schema::dropIfExists('contacts');
     }
 };
