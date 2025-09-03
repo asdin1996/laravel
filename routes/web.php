@@ -12,7 +12,7 @@ Route::get('/', function () {
 });
 Route::resource('tasks', TaskController::class);
 Route::resource('contacts', ContactController::class);
-Route::get('/books', [BookController::class, 'index']);
+Route::resource('books', BookController::class);
 Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login'])
     ->name('login');
 Route::get('lang/{locale}', function ($locale) {
