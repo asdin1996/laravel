@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Models\Contact;
+use App\Events\ContactRegistered;
 class ContactController extends Controller
 {
     /**
@@ -30,14 +31,20 @@ class ContactController extends Controller
     public function store(Request $request):JsonResponse
     {
          $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            // otros campos que tengas en books
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'file' => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:2048',
         ]);
 
-        $book = Contact::create($validated);
+        if ($request->hasFile('file')) {
+            $path = $request->file('file')->store('files', 'public');
+            $validated['file'] = $path;
+        }
 
-        return response()->json($book, 201);
+        $contact = Contact::create($validated);
+
+        //event(new ContactRegistered($contact));
+        return response()->json($contact, 201);
     }
 
     /**
