@@ -35,22 +35,10 @@ WORKDIR /var/www
 COPY . /var/www
 
 # ----------------------------
-# Copiar .env de ejemplo si el .env real no está versionado
+# Copiar script de entrypoint
 # ----------------------------
-COPY .env.example /var/www/.env
-
-# ----------------------------
-# Ajustar permisos para PHP-FPM
-# ----------------------------
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-
-# ----------------------------
-# Cache de Laravel (opcional, solo si .env existe)
-# ----------------------------
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache || echo "No .env, skipping cache"
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # ----------------------------
 # Exponer puerto de PHP-FPM
@@ -60,4 +48,4 @@ EXPOSE 9000
 # ----------------------------
 # Comando por defecto
 # ----------------------------
-CMD ["php-fpm"]
+ENTRYPOINT ["entrypoint.sh"]
