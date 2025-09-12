@@ -1,7 +1,7 @@
-# Imagen base
+# Base image
 FROM php:8.2-fpm
 
-# Instalar dependencias de sistema necesarias para Laravel
+# Instalar extensiones necesarias para Laravel
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -10,8 +10,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -19,12 +18,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Crear directorio de trabajo
 WORKDIR /var/www
 
-# Copiar entrypoint
+# Copiar el entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Definir entrypoint
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Mantener PHP-FPM corriendo
-CMD ["php-fpm"]
+ENTRYPOINT ["entrypoint.sh"]
