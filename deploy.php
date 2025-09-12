@@ -8,5 +8,5 @@ if (!hash_equals('sha1=' . hash_hmac('sha1', $payload, $secret), $header)) {
     exit('Invalid signature');
 }
 
-exec('/var/www/vhosts/laravel-asdin.com/httpdocs/laravel/deploy.sh > /tmp/deploy.log 2>&1 &');
+exec('/var/www/vhosts/laravel-asdin.com/httpdocs/deploy.sh > /tmp/deploy.log 2>&1 &');
 echo 'Deploy triggered';
