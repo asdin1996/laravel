@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  php-fpm:
+    build:
+      context: ./php-fpm
+    volumes:
+      - ./app:/var/www/app
+      - ./.env:/var/www/.env
+      - ./storage:/var/www/storage
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public:/var/www/public
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./storage:/var/www/storage
+    depends_on:
+      - php-fpm
+
+networks:
+  laravel:
