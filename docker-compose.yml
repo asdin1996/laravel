@@ -4,24 +4,29 @@ services:
   php-fpm:
     build:
       context: ./docker/common/php-fpm
+    container_name: php-fpm
     volumes:
       - ./app:/var/www/app
-      - ./.env:/var/www/.env
+      - ./public:/var/www/public
       - ./storage:/var/www/storage
+      - ./.env:/var/www/.env
       - ./bootstrap:/var/www/bootstrap
-      - ./routes:/var/www/routes
       - ./vendor:/var/www/vendor
+      - ./routes:/var/www/routes
+      - ./config:/var/www/config
+      - ./resources:/var/www/resources
+    working_dir: /var/www
 
   nginx:
     build:
       context: ./docker/deployment/nginx
+    container_name: nginx
     ports:
       - "8080:80"
     volumes:
       - ./public:/var/www/public
+      - ./docker/deployment/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/deployment/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./storage:/var/www/storage
     depends_on:
       - php-fpm
-
-networks:
-  default:
-    name: laravel
