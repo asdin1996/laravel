@@ -28,4 +28,4 @@ jobs:
           context: ./docker/common/php-fpm
           file: ./docker/common/php-fpm/Dockerfile
           push: true
-          tags: asdin1996/laravel:latest
+          tags: asdin96/laravel:latest
