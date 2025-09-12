@@ -1,7 +1,25 @@
-#!/bin/bash
+#!/bin/sh
+set -e
+
+# ----------------------------
 # Ajustar permisos
+# ----------------------------
 chown -R www-data:www-data /var/www
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Mantener el contenedor corriendo
+# ----------------------------
+# Ejecutar Artisan cache solo si existe .env
+# ----------------------------
+if [ -f /var/www/.env ]; then
+    echo "Found .env, running Laravel cache commands..."
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+else
+    echo ".env not found, skipping Laravel cache commands."
+fi
+
+# ----------------------------
+# Mantener PHP-FPM corriendo
+# ----------------------------
 php-fpm
