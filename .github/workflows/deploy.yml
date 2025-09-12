@@ -22,8 +22,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push image
+      - name: Build and push PHP-FPM image
         uses: docker/build-push-action@v4
         with:
+          context: ./docker/common/php-fpm
+          file: ./docker/common/php-fpm/Dockerfile
           push: true
           tags: asdin1996/laravel:latest

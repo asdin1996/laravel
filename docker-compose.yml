@@ -4,7 +4,7 @@ services:
   php-fpm:
     build:
       context: ./docker/common/php-fpm
-      dockerfile: Dockerfile   # 👈 aquí indicamos explícitamente el Dockerfile correcto
+      dockerfile: Dockerfile
     container_name: php-fpm
     volumes:
       - ./app:/var/www/app
