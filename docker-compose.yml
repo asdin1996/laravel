@@ -26,9 +26,8 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./public:/var/www/public
+      - .:/var/www
       - ./docker/deployment/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/deployment/nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./storage:/var/www/storage
     depends_on:
       - php-fpm
