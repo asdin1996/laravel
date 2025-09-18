@@ -106,4 +106,43 @@ class ContactController extends Controller
      *   "file": (attached file)
      * }
      */
-    public function update(Request $request, int $id
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'name'  => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email',
+            'file'  => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:2048',
+        ]);
+
+        $contact = Contact::findOrFail($id);
+
+        if ($request->hasFile('file')) {
+            $path = $request->file('file')->store('files', 'public');
+            $validated['file'] = $path;
+        }
+
+        $contact->update($validated);
+
+        return response()->json($contact);
+    }
+
+    /**
+     * Remove the specified contact from storage.
+     *
+     * Deletes a contact by ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @example
+     * DELETE /api/contacts/{id}
+     * Authorization: Bearer {token}
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $contact = Contact::findOrFail($id);
+        $contact->delete();
+
+        return response()->json(['message' => 'Contact deleted successfully']);
+    }
+}

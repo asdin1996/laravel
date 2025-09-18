@@ -47,6 +47,7 @@ class BookController extends Controller
         $validated = $request->validate([
             'title'  => 'required|string|max:255',
             'author' => 'required|string|max:255',
+            'contact_id' => 'nullable|exists:contacts,id'
             // add other fields defined in the books table
         ]);
 
