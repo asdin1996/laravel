@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contact extends Model
 {
-    protected $fillable = ['name', 'email','file'];
-    public function index()
-    {
-        $contacts = Contact::all();
+    use HasFactory;
 
-        // Pasa la colección completa a la vista
-        return view('contacts.index', compact('contacts'));
-    }
+    /**
+     * The attributes that are mass assignable.
+     *
+     * Allows mass assignment for 'name', 'email', and optional 'file'.
+     *
+     * @var array
+     */
+    protected $fillable = ['name', 'email', 'file'];
 }

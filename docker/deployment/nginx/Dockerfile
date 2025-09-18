@@ -1,12 +1,23 @@
-# Usa la imagen oficial de Nginx Alpine
+# ---------------------------
+# Use the official Nginx Alpine image
+# Alpine version is lightweight and optimized for production
+# ---------------------------
 FROM nginx:alpine
 
-# Copia tu configuración personalizada de Nginx
-# El archivo nginx.conf debe estar en el mismo directorio que este Dockerfile
+# ---------------------------
+# Copy custom Nginx configuration
+# Ensure nginx.conf is in the same directory as this Dockerfile
+# ---------------------------
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expone el puerto 80 para HTTP
+# ---------------------------
+# Expose HTTP port
+# ---------------------------
 EXPOSE 80
 
-# Comando por defecto (ya viene en la imagen oficial)
+# ---------------------------
+# Default command
+# Keeps Nginx running in the foreground
+# Already defined in the base image, but explicit for clarity
+# ---------------------------
 CMD ["nginx", "-g", "daemon off;"]

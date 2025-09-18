@@ -1,66 +1,316 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel API & Web Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-featured Laravel project with API and Web functionality, authentication, book and contact management, Dockerized PHP-FPM & Nginx environment, GitHub webhook deployment, and unit/feature testing.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table of Contents
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. [Features](#features)
+2. [Requirements](#requirements)
+3. [Installation](#installation)
+4. [Docker Setup](#docker-setup)
+5. [Nginx Configuration](#nginx-configuration)
+6. [Authentication](#authentication)
+7. [API Endpoints](#api-endpoints)
+8. [Web Routes](#web-routes)
+9. [Models](#models)
+10. [Seeders](#seeders)
+11. [Artisan Commands](#artisan-commands)
+12. [Testing](#testing)
+13. [GitHub Webhook Deployment](#github-webhook-deployment)
+14. [License](#license)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* User authentication via Laravel Sanctum
+* Books resource CRUD (API + Web)
+* Contacts resource CRUD (API + Web) with optional file upload
+* Tasks resource CRUD (Web)
+* Event/Listener system (`ContactRegistered` → `SendWelcomeEmailListener`)
+* GitHub webhook deployment script
+* Dockerized environment (PHP-FPM + Nginx)
+* PHPUnit Unit & Feature testing
+* Seeders for testing (`ContactSeeder.php`)
+* Cache & config management via Laravel artisan commands
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Requirements
 
-## Laravel Sponsors
+* Docker >= 20.x
+* Docker Compose >= 1.29.x
+* PHP >= 8.2 (inside Docker)
+* Composer (optional, handled in Docker)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+1. Clone the repository:
 
-## Contributing
+```bash
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. Copy `.env` file:
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. Build Docker containers:
 
-## Security Vulnerabilities
+```bash
+docker-compose build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. Start the containers:
+
+```bash
+docker-compose up -d
+```
+
+5. Install dependencies inside the PHP container:
+
+```bash
+docker exec -it php-fpm composer install
+```
+
+6. Run migrations:
+
+```bash
+docker exec -it php-fpm php artisan migrate
+```
+
+7. (Optional) Run seeders, e.g., `ContactSeeder`:
+
+```bash
+docker exec -it php-fpm php artisan db:seed --class=ContactSeeder
+```
+
+---
+
+## Docker Setup
+
+**PHP-FPM Dockerfile**:
+
+* Base: `php:8.2-fpm`
+* Extensions: `pdo_mysql`, `mbstring`, `bcmath`, `gd`, `exif`, `pcntl`
+* Composer included
+* Custom entrypoint `entrypoint.sh` sets permissions and clears/regenerates caches
+
+**Nginx Dockerfile**:
+
+* Base: `nginx:alpine`
+* Custom configuration mounted via `nginx.conf` and `conf.d`
+* Exposes port 80 → host port 8080
+
+**docker-compose.yml**:
+
+* `php-fpm` and `nginx` services
+* Shared volumes for app code, public, storage, vendor, config, bootstrap, resources
+* Nginx depends on PHP-FPM
+* Access API/Web at `http://localhost:8080`
+
+---
+
+## Nginx Configuration
+
+```nginx
+server {
+    listen 80;
+    root /var/www/public;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass php-fpm:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\.ht { deny all; }
+}
+```
+
+---
+
+## Authentication
+
+* Login (`POST /login`) → returns API token
+* Register (`POST /register`) → creates user
+* Logout single session (`POST /logout`)
+* Logout all sessions (`POST /logoutAll`)
+
+**Controller:** `AuthController.php`
+
+---
+
+## API Endpoints
+
+| Method | Endpoint       | Description                          | Auth Required |
+| ------ | -------------- | ------------------------------------ | ------------- |
+| GET    | /user          | Get authenticated user info          | Yes           |
+| POST   | /login         | Login user                           | No            |
+| POST   | /register      | Register new user                    | No            |
+| POST   | /logout        | Logout current session               | Yes           |
+| POST   | /logoutAll     | Logout all sessions                  | Yes           |
+| GET    | /books         | List all books                       | Yes           |
+| POST   | /books         | Create a new book                    | Yes           |
+| GET    | /books/{id}    | Show book details                    | Yes           |
+| PUT    | /books/{id}    | Update book                          | Yes           |
+| DELETE | /books/{id}    | Delete book                          | Yes           |
+| GET    | /contacts      | List all contacts (paginated)        | Yes           |
+| POST   | /contacts      | Create a new contact (file optional) | Yes           |
+| GET    | /contacts/{id} | Show contact details                 | Yes           |
+| PUT    | /contacts/{id} | Update contact                       | Yes           |
+| DELETE | /contacts/{id} | Delete contact                       | Yes           |
+
+---
+
+## Web Routes
+
+* Homepage: `/` → `welcome` view
+* Tasks: `Route::resource('tasks', TaskController::class)`
+* Contacts: `Route::resource('contacts', ContactController::class)`
+* Books: `Route::resource('books', BookController::class)`
+* Login (web form): `POST /login` → `LoginController@login`
+* Language switch: `/lang/{locale}` → switches between `en` and `es`
+
+---
+
+## Models
+
+### Book
+
+```php
+protected $fillable = ['title', 'contact_id'];
+
+public function contact() {
+    return $this->belongsTo(Contact::class);
+}
+```
+
+### Contact
+
+```php
+protected $fillable = ['name', 'email', 'file'];
+```
+
+### Task
+
+```php
+protected $fillable = ['title'];
+```
+
+*Notes:* Keep business logic in controllers, not in models.
+
+---
+
+## Seeders
+
+* Example: `ContactSeeder.php`
+  Seeds sample contacts for testing or initial setup.
+
+```bash
+docker exec -it php-fpm php artisan db:seed --class=ContactSeeder
+```
+
+---
+
+## Artisan Commands
+
+* Create a controller:
+
+```bash
+docker exec -it php-fpm php artisan make:controller BookController --resource
+```
+
+* Create a model:
+
+```bash
+docker exec -it php-fpm php artisan make:model Book
+```
+
+* Create a seeder:
+
+```bash
+docker exec -it php-fpm php artisan make:seeder ContactSeeder
+```
+
+* Run migrations:
+
+```bash
+docker exec -it php-fpm php artisan migrate
+```
+
+* Run seeders:
+
+```bash
+docker exec -it php-fpm php artisan db:seed --class=ContactSeeder
+```
+
+* Execute all tests:
+
+```bash
+docker exec -it php-fpm php artisan test
+```
+
+* Run specific PHPUnit test:
+
+```bash
+docker exec -it php-fpm vendor/bin/phpunit --filter BookTest
+```
+
+---
+
+## Testing
+
+* PHPUnit configured with `phpunit.xml`
+* Unit and Feature tests for controllers
+* Environment setup for tests:
+
+```xml
+<env name="APP_ENV" value="testing"/>
+<env name="CACHE_DRIVER" value="array"/>
+<env name="QUEUE_CONNECTION" value="sync"/>
+<env name="MAIL_MAILER" value="array"/>
+```
+
+*Example Feature Test: `BookTest.php`*
+
+```php
+$book = Book::create([
+    'title' => 'Clean Code',
+    'author'=> 'Robert C. Martin',
+    'contact_id' => 1
+]);
+
+$this->assertDatabaseHas('books', [
+    'title' => 'Clean Code'
+]);
+```
+
+---
+
+## GitHub Webhook Deployment
+
+* Webhook PHP listener: `deploy.php`
+* Verifies HMAC signature (`X-Hub-Signature`)
+* Executes `deploy.sh` asynchronously
+* Logs output to `/tmp/deploy.log`
+
+*Security tips:* Restrict by IP or event type
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License © 2025 Asdin

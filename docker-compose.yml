@@ -1,33 +1,39 @@
 version: '3.8'
 
 services:
+  # ---------------------------
+  # PHP-FPM service
+  # ---------------------------
   php-fpm:
     build:
-      context: ./docker/common/php-fpm
+      context: ./docker/common/php-fpm  # Path to PHP Dockerfile
       dockerfile: Dockerfile
     container_name: php-fpm
     volumes:
-      - ./app:/var/www/app
-      - ./public:/var/www/public
-      - ./storage:/var/www/storage
-      - ./.env:/var/www/.env
-      - ./bootstrap:/var/www/bootstrap
-      - ./vendor:/var/www/vendor
-      - ./routes:/var/www/routes
-      - ./config:/var/www/config
-      - ./resources:/var/www/resources
-    working_dir: /var/www
+      - ./app:/var/www/app              # Laravel app code
+      - ./public:/var/www/public        # Public directory
+      - ./storage:/var/www/storage      # Storage directory
+      - ./.env:/var/www/.env            # Environment file
+      - ./bootstrap:/var/www/bootstrap  # Laravel bootstrap folder
+      - ./vendor:/var/www/vendor        # Composer dependencies
+      - ./routes:/var/www/routes        # Laravel routes
+      - ./config:/var/www/config        # Config files
+      - ./resources:/var/www/resources  # Blade templates, assets, etc.
+    working_dir: /var/www                # Set working directory inside container
 
+  # ---------------------------
+  # Nginx service
+  # ---------------------------
   nginx:
     build:
-      context: ./docker/deployment/nginx
+      context: ./docker/deployment/nginx  # Path to Nginx Dockerfile
       dockerfile: Dockerfile
     container_name: nginx
     ports:
-      - "8080:80"
+      - "8080:80"                         # Expose port 8080 on host mapped to 80 in container
     volumes:
-      - .:/var/www
-      - ./docker/deployment/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./docker/deployment/nginx/conf.d:/etc/nginx/conf.d:ro
+      - .:/var/www                         # Mount the full project inside container
+      - ./docker/deployment/nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Main Nginx config (read-only)
+      - ./docker/deployment/nginx/conf.d:/etc/nginx/conf.d:ro           # Include additional site configs (read-only)
     depends_on:
-      - php-fpm
+      - php-fpm                            # Start Nginx after PHP-FPM

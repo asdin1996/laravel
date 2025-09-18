@@ -1,25 +1,34 @@
 #!/bin/sh
 set -e
 
-# Ajustar permisos
+# ---------------------------
+# Set permissions
+# ---------------------------
+# Ensure the www-data user owns the application files
 chown -R www-data:www-data /var/www
+
+# Ensure storage and bootstrap/cache are writable
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache || true
 
-# Ejecutar cache solo si artisan existe
+# ---------------------------
+# Run Laravel cache commands if artisan exists
+# ---------------------------
 if [ -f /var/www/artisan ]; then
     cd /var/www
 
-    echo "Limpiando caches..."
+    echo "Clearing caches..."
     php artisan config:clear || true
     php artisan cache:clear || true
     php artisan view:clear || true
     php artisan route:clear || true
 
-    echo "Regenerando caches..."
+    echo "Rebuilding caches..."
     php artisan config:cache || true
     php artisan route:cache || true
     php artisan view:cache || true
 fi
 
-# Arrancar php-fpm en foreground
+# ---------------------------
+# Start PHP-FPM in the foreground
+# ---------------------------
 exec php-fpm

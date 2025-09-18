@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-// app/Models/Task.php
-
 class Task extends Model
 {
-        public function index()
-    {
-        // Obtiene todas las tareas
-        $tasks = Task::all();
+    use HasFactory;
 
-        // Pasa la colección completa a la vista
-        return view('tasks.index', compact('tasks'));
-    }
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * Allows mass assignment for 'title' (or other fields you add).
+     *
+     * @var array
+     */
+    protected $fillable = ['title'];
 }
-
