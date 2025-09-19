@@ -91,4 +91,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('books', BookController::class);
     Route::apiResource('contacts', ContactController::class);
+    Route::put('/books/{id}', [BookController::class, 'update']);
 });

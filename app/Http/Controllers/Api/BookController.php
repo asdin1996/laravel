@@ -96,8 +96,7 @@ class BookController extends Controller
     {
         $validated = $request->validate([
             'title'  => 'sometimes|required|string|max:255',
-            'author' => 'sometimes|required|string|max:255',
-            // add other fields if necessary
+            'contact_id' => 'sometimes|required|int',
         ]);
 
         $book = Book::findOrFail($id);
