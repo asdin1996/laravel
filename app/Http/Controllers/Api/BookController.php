@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\Book;
@@ -22,8 +23,8 @@ class BookController extends Controller
      */
     public function index(): JsonResponse
     {
-        $books = Book::with('contact')->get();
-        return response()->json($books);
+        $books = Book::with('contact')->paginate(20);
+        return response()->json(BookResource::collection($books));
     }
 
     /**
@@ -72,7 +73,7 @@ class BookController extends Controller
     {
         $book = Book::with('contact')->findOrFail($id);
 
-        return response()->json($book);
+        return response()->json(new BookResource($book));
     }
 
     /**

@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\BookController;
+use App\Http\Controllers\Web\ContactController;
+use App\Http\Controllers\Web\BookController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TaskController;
+use App\Http\Controllers\Web\TaskControllerWeb;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
@@ -19,7 +19,7 @@ Route::get('/', function () {
 // Task resource routes
 // ---------------------------
 // Creates standard CRUD routes for tasks (index, create, store, show, edit, update, destroy)
-Route::resource('tasks', TaskController::class);
+Route::resource('tasks', TaskControllerWeb::class);
 
 // ---------------------------
 // Contact resource routes
@@ -37,7 +37,7 @@ Route::resource('books', BookController::class);
 // Login route
 // ---------------------------
 // Handles login form submission via LoginController
-Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login'])
+Route::post('/login', [\App\Http\Controllers\Web\Auth\LoginControllerWeb::class, 'login'])
     ->name('login');
 
 // ---------------------------

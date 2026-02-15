@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Contact\StoreContactRequest;
+
 
 class ContactController extends Controller
 {
@@ -21,22 +24,18 @@ class ContactController extends Controller
     {
         $query = Contact::query();
 
-        // Filter by name if 'title' is provided
         if ($request->filled('title')) {
             $query->where('name', 'like', '%' . $request->title . '%');
         }
 
-        // Filter by specific contact ID
         if ($request->filled('contact_id')) {
             $query->where('id', $request->contact_id);
         }
 
-        // Reset all filters
         if ($request->has('clean')) {
             return redirect()->route('contacts.index');
         }
 
-        // Paginate results and keep query parameters in links
         $contacts = $query->paginate(10)->appends($request->query());
 
         return view('contacts.index', compact('contacts'));
@@ -52,24 +51,21 @@ class ContactController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreContactRequest $request)
     {
-        $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email',
-            'file'  => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:2048',
-        ]);
+        $validated = $request->validated();
 
-        // Handle file upload if present
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('files', 'public');
-            $validated['file'] = $path;
+            $validated['file'] = $request->file('file')
+                ->store('files', 'public');
         }
 
-        // Create the contact
-        Contact::create($validated);
+        $contact = Contact::create($validated);
 
-        return redirect()->route('contacts.index')
+        // event(new ContactRegistered($contact));
+
+        return redirect()
+            ->route('contacts.index')
             ->with('success', 'Contact successfully registered');
     }
 

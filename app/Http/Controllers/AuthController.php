@@ -25,23 +25,16 @@ class AuthController extends Controller
      *   "password": "password123"
      * }
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required'
-        ]);
+        $user = User::where('email', $request->email)->first();
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $user  = Auth::user();
-        $token = $user->createToken('api-token')->plainTextToken;
-
         return response()->json([
-            'user'  => $user,
-            'token' => $token
+            'token' => $user->createToken('api-token')->plainTextToken
         ]);
     }
 

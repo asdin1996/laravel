@@ -15,8 +15,8 @@ class ContactSeeder extends Seeder
      */
     public function run()
     {
-        $batchSize = 1000; // Inserta en lotes de 1000
-        $total = 1000000;  // Total de registros a generar
+        $batchSize = 1000;
+        $total = 1000000;
 
         for ($i = 0; $i < $total; $i += $batchSize) {
             $data = [];
