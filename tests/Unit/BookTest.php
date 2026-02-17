@@ -17,22 +17,17 @@ class BookTest extends TestCase
      */
     public function test_it_can_create_a_book()
     {
-        // ---------------------------
-        // Create a book record
-        // ---------------------------
-        // Note: Ensure a Contact with ID=1 exists if using foreign key
-        $book = Book::create([
-            'title'      => 'Clean Code',
-            'author'     => 'Robert C. Martin',
-            'contact_id' => 1 // Optional: relation to a contact
+        $this->assertDatabaseMissing('books', [
+            'title' => 'Test unit 17/02/2026'
         ]);
 
-        // ---------------------------
-        // Assert database has the new book
-        // ---------------------------
+        $book = Book::create([
+            'title'      => 'Test unit 17/02/2026',
+            'contact_id' => 4
+        ]);
+
         $this->assertDatabaseHas('books', [
-            'title' => 'Clean Code',
-            'author'=> 'Robert C. Martin'
+            'title' => 'Test unit 17/02/2026'
         ]);
     }
 }
